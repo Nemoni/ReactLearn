@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import PropTypes from "prop-types"
 
 // 类组件
 class HelloMessage extends React.Component {
@@ -21,6 +22,9 @@ class HelloMessage extends React.Component {
       </div>
     );
   }
+}
+HelloMessage.propTypes = {
+  message:PropTypes.string, // 设置message类型为string，如果不是string则会在浏览器报错
 }
 // 函数组件
 function FuncComponent(p) {
@@ -78,13 +82,24 @@ class BeControled extends React.Component{
     );
   }
 }
+// props.children
+class ChildComp extends React.Component{
+  render(){
+    return (
+      <div>
+        <p>我是一个组件</p>
+        {this.props.children}
+      </div>
+    )
+  }
+}
 // 所有的组件都放到Board上
 class Board extends React.Component {
   render() {
     return (
       <div>
         {/* 不可见组件 */}
-        <div style={{ display: "none" }}>
+        <div style={{ display: "block" }}>
           <HelloMessage message="baby" />
           <FuncComponent msg="good" />
           <ArrowFuncComponent message="arrow" />
@@ -93,6 +108,10 @@ class Board extends React.Component {
         <div>
           <IncNum />
           <BeControled />
+          <ChildComp>
+            <p>子组件一号</p>
+            <p>子组件二号</p>
+          </ChildComp>
         </div>
       </div>
     );
