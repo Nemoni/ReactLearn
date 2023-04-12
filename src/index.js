@@ -1,117 +1,71 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import PropTypes from "prop-types"
+import img from "./images/pig.png"
 
-// 类组件
-class HelloMessage extends React.Component {
-  handleClick() {
-    console.log("点击了类组件中");
+// render props模式
+// 获取鼠标位置的组件
+class Mouse extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      x:0,
+      y:0,
+    };
   }
-  handleAClick(e) {
-    e.preventDefault();
-    console.log("点击了链接标签");
+  // 鼠标位置更新的时候更新state中的鼠标位置
+  handleMouseMove = (event) => {
+    this.setState({
+      x: event.clientX,
+      y: event.clientY,
+    })
   }
-  render() {
-    return (
-      <div>
-        <p>hello {this.props.message}</p>
-        <button onClick={() => this.handleClick()}>点击</button>
-        <a href="www.baidu.com" onClick={this.handleAClick}>
-          链接
-        </a>
-      </div>
-    );
+  // 注册鼠标移动事件
+  componentDidMount(){
+    window.addEventListener('mousemove', this.handleMouseMove)
   }
-}
-HelloMessage.propTypes = {
-  message:PropTypes.string, // 设置message类型为string，如果不是string则会在浏览器报错
-}
-// 函数组件
-function FuncComponent(p) {
-  function handleClick() {
-    console.log("点击了");
+  // 解绑事件
+  componentWillUnmount(){
+    window.removeEventListener('mousemove', this.handleMouseMove);
   }
-  return (
-    <div>
-      <h1>I'm function Component, received: {p.msg}</h1>
-      <button onClick={handleClick}>点我</button>
-    </div>
-  );
-}
-// 箭头函数组件
-const ArrowFuncComponent = (props) => (
-  <h1>Arrow function to create component, received: {props.message}</h1>
-);
-// state setState
-class IncNum extends React.Component {
-  state = {
-    count: 0,
-  };
-  handleClick() {
-    this.setState({ count: this.state.count + 1 });
-  }
-  handleClick2 = ()=>{
-    this.setState(prevState=>({count:prevState.count+1})); // state的值有可能变化，使用此处的方法更好
-  }
-  render() {
-    return (
-      <div>
-        <p>count:{this.state.count}</p>
-        {/* 在这里解决this指针问题 */}
-        <button onClick={() => this.handleClick()}>+1</button> 
-        {/* 在函数定义处解决this指针问题 */}
-        <button onClick={this.handleClick2}>+1(方式2)</button> 
-      </div>
-    );
+
+  render(){
+    return this.props.render(this.state);
   }
 }
-// 受控组件（让html组件受react控制）
-class BeControled extends React.Component{
-  state = {
-    text: ""
-  };
-  handleInputChange = e=>{
-    this.setState({text:e.target.value});
-    console.log(e.target.value);
+
+class App extends React.Component{
+  displayInMouse = (mouse) => {
+    return <p>鼠标位置 x:{mouse.x}, y:{mouse.y}</p> 
   }
   render(){
     return (
       <div>
-        <input type="text" value={this.state.text} onChange={this.handleInputChange}></input>
+        <Mouse render={this.displayInMouse} />
+        <Mouse render={(mouse)=>{
+          return <img src={img} alt="pig" style={{
+            position:"absolute",
+            top:mouse.y-100,
+            left:mouse.x-100,
+          }} />
+        }} />
       </div>
-    );
-  }
-}
-// props.children
-class ChildComp extends React.Component{
-  render(){
-    return (
-      <div>
-        <p>我是一个组件</p>
-        {this.props.children}
-      </div>
+
     )
   }
 }
+
 // 所有的组件都放到Board上
 class Board extends React.Component {
   render() {
     return (
       <div>
         {/* 不可见组件 */}
-        <div style={{ display: "block" }}>
-          <HelloMessage message="baby" />
-          <FuncComponent msg="good" />
-          <ArrowFuncComponent message="arrow" />
+        <div style={{ display: "none" }}>
+
         </div>
         {/* 正常显示的组件 */}
         <div>
-          <IncNum />
-          <BeControled />
-          <ChildComp>
-            <p>子组件一号</p>
-            <p>子组件二号</p>
-          </ChildComp>
+          <App></App>
         </div>
       </div>
     );
