@@ -1,55 +1,39 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import img from "./images/pig.png"
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 
-// render props模式
-// 获取鼠标位置的组件
-class Mouse extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      x:0,
-      y:0,
-    };
-  }
-  // 鼠标位置更新的时候更新state中的鼠标位置
-  handleMouseMove = (event) => {
-    this.setState({
-      x: event.clientX,
-      y: event.clientY,
-    })
-  }
-  // 注册鼠标移动事件
-  componentDidMount(){
-    window.addEventListener('mousemove', this.handleMouseMove)
-  }
-  // 解绑事件
-  componentWillUnmount(){
-    window.removeEventListener('mousemove', this.handleMouseMove);
-  }
-
-  render(){
-    return this.props.render(this.state);
-  }
-}
-
-class App extends React.Component{
-  displayInMouse = (mouse) => {
-    return <p>鼠标位置 x:{mouse.x}, y:{mouse.y}</p> 
-  }
+class First extends React.Component{
   render(){
     return (
       <div>
-        <Mouse render={this.displayInMouse} />
-        <Mouse render={(mouse)=>{
-          return <img src={img} alt="pig" style={{
-            position:"absolute",
-            top:mouse.y-100,
-            left:mouse.x-100,
-          }} />
-        }} />
+        <p>这是First组件</p>
       </div>
+    )
+  }
+}
 
+function Second(){
+  return (
+    <div>
+      <p>这是Second组件</p>
+    </div>
+  )
+}
+
+class App extends React.Component{
+  render(){
+    return (
+      <Router>
+        <div>
+          <h1>路由专题</h1>
+          <Link to="/First">页面一 </Link>
+          <Link to="/Second">页面二</Link>
+          <Routes>
+            <Route path="/First" Component={First}></Route>
+            <Route path="/Second" Component={Second} />
+          </Routes>
+        </div>
+      </Router>
     )
   }
 }
